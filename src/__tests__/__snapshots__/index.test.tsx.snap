@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders index unchanged 1`] = `
+Array [
+  <nav
+    className="navbar is-fixed-top"
+    role="navigation"
+  >
+    <div
+      className="navbar-brand"
+    >
+      <a
+        className="navbar-item"
+        href="/"
+        onClick={[Function]}
+        onMouseEnter={[Function]}
+      >
+        <h1
+          className="title"
+        >
+          TDEE Online
+        </h1>
+      </a>
+      <a
+        className="navbar-burger burger "
+        data-target="navbarBasicExample"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        role="button"
+        tabIndex={0}
+      >
+        <span
+          aria-hidden="true"
+        />
+        <span
+          aria-hidden="true"
+        />
+        <span
+          aria-hidden="true"
+        />
+      </a>
+    </div>
+    <div
+      className="navbar-menu"
+      id="navbarBasicExample"
+    >
+      <div
+        className="navbar-start"
+      >
+        <a
+          className="navbar-item"
+          href="/"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+        >
+          Home
+        </a>
+      </div>
+      <div
+        className="navbar-end"
+      >
+        <div
+          className="navbar-item"
+        >
+          <div
+            className="buttons"
+          >
+            <a
+              className="button has-background-primary-dark"
+              href="/signup"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+            >
+              <strong>
+                Sign up
+              </strong>
+            </a>
+            <a
+              className="button has-text-dark has-background-grey-lighter"
+              href="/signin"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+            >
+              Sign in
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>,
+  <section
+    className="hero is-fullheight background"
+  >
+    <div
+      className="hero-body"
+    >
+      <div
+        className="container has-text-centered"
+      >
+        <h1
+          className="title is-1"
+        >
+          TDEE Online
+        </h1>
+        <h3
+          className="subtitle is-3"
+        >
+          Eat. Track. Progress.
+        </h3>
+      </div>
+      <span
+        className="tag credit"
+      >
+        Photo by  
+        <a
+          href="https://unsplash.com/@brett_jordan?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+        >
+          Brett Jordan
+        </a>
+         on 
+        <a
+          href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+        >
+          Unsplash
+        </a>
+      </span>
+    </div>
+  </section>,
+]
+`;

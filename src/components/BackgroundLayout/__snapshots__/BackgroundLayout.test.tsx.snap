@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders BackgroundLayout unchanged 1`] = `
+<section
+  className="hero is-fullheight background"
+>
+  <div
+    className="hero-body"
+  >
+    <span
+      className="tag credit"
+    >
+      Photo by  
+      <a
+        href="https://unsplash.com/@brett_jordan?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+      >
+        Brett Jordan
+      </a>
+       on 
+      <a
+        href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+      >
+        Unsplash
+      </a>
+    </span>
+  </div>
+</section>
+`;
