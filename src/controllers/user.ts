@@ -9,22 +9,27 @@ import { ApiError } from '../types';
 
 const UserController = {
   createUser: async (req: NextApiRequest): Promise<{ user?: User; error?: ApiError }> => {
-    const user: User = plainToClass(User, req.body);
+    const newUser: User = plainToClass(User, req.body);
 
     try {
-      await validateOrReject(user);
+      await validateOrReject(newUser);
     } catch (err) {
       console.log(err);
       return { error: { code: 422, message: 'Unprocessable entity', description: err } };
     }
 
-    const connection = await Database.fetchConnection();
+    try {
+      const connection = await Database.fetchConnection();
 
-    return {
-      user: await connection
+      const user = await connection
         .getRepository(User)
-        .save({ ...user, password: await hash(user.password, 10) })
-    };
+        .save({ ...newUser, password: await hash(newUser.password, 10) });
+
+      return { user };
+    } catch (err) {
+      console.log(err);
+      return { error: { code: 500, message: 'Internal Server Error', description: err } };
+    }
   }
 };
 
