@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { Connection, createConnection, getConnection } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import AlreadyHasActiveConnectionError from 'typeorm/error/AlreadyHasActiveConnectionError';
 
 import { User } from './entities';
 

@@ -1,4 +1,5 @@
 import ApiError from './apiError';
-import IUser from './user';
+import Sex from './sex';
 
-export type { ApiError, IUser };
+export type { ApiError };
+export { Sex };

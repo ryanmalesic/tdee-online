@@ -1,10 +1,7 @@
 import { IsDefined, IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum Sex {
-  Male = 'MALE',
-  Female = 'FEMALE'
-}
+import { Sex } from '../types';
 
 @Entity({ name: 'users' })
 export default class User {
@@ -27,7 +24,6 @@ export default class User {
   @IsNotEmpty()
   public password!: string;
 
-  // Date doesn't work for some reason
   @Column({ type: 'date' })
   @IsDefined()
   @IsNotEmpty()

@@ -14,13 +14,17 @@ const UserController = {
     try {
       await validateOrReject(user);
     } catch (err) {
+      console.log(err);
       return { error: { code: 422, message: 'Unprocessable entity', description: err } };
     }
 
     const connection = await Database.fetchConnection();
-    await connection.getRepository(User).save({ ...user, password: await hash(user.password, 10) });
 
-    return { user };
+    return {
+      user: await connection
+        .getRepository(User)
+        .save({ ...user, password: await hash(user.password, 10) })
+    };
   }
 };
 
