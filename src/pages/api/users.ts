@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { UserController } from '../../controllers';
-import { ApiError } from '../../types';
+import { User } from '../../entities';
+import { withEntitiyValidation, withMethods } from '../../utils/middleware';
 
-export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   if (req.method == 'POST') {
     const { user, error } = await UserController.createUser(req);
 
@@ -12,13 +13,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
     } else {
       res.status(201).json(user);
     }
-  } else {
-    const error: ApiError = {
-      code: 405,
-      description: 'Method not allowed',
-      message: `Method ${req.method} at path ${req.url} is not allowed`
-    };
-
-    res.status(error.code).json(error);
   }
 };
+
+export default withMethods(withEntitiyValidation(handler, User), ['POST']);

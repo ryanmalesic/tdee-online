@@ -1,7 +1,5 @@
 import { compare, hash } from 'bcrypt';
-import { plainToClass } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
-import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 import { NextApiRequest } from 'next';
 
 import Database from '../database';
@@ -10,22 +8,13 @@ import { ApiError } from '../types';
 
 const UserController = {
   createUser: async (req: NextApiRequest): Promise<{ user?: User; error?: ApiError }> => {
-    const newUser: User = plainToClass(User, req.body);
-
-    try {
-      await validateOrReject(newUser);
-    } catch (err) {
-      console.log(err);
-      return { error: { code: 422, message: 'Unprocessable entity', description: err } };
-    }
-
     try {
       const database = new Database();
       const connection = await database.getConnection();
 
       const user = await connection
         .getRepository(User)
-        .save({ ...newUser, password: await hash(newUser.password, 10) });
+        .save({ ...req.body, password: await hash(req.body.password, 10) });
 
       return { user };
     } catch (err) {
@@ -49,7 +38,7 @@ const UserController = {
   },
   validateUserCredentials: async (
     req: NextApiRequest
-  ): Promise<{ token?: string; error?: ApiError }> => {
+  ): Promise<{ user?: Partial<User>; error?: ApiError }> => {
     const { email, password } = req.body;
 
     try {
@@ -69,12 +58,7 @@ const UserController = {
         };
       }
 
-      const token = jwt.sign({ sub: user.userId }, process.env.JWT_KEY, {
-        algorithm: 'HS256',
-        expiresIn: '1h'
-      });
-
-      return { token };
+      return { user: _.omit(user, 'password') };
     } catch (err) {
       console.log(err);
       return { error: { code: 500, message: 'Internal Server Error', description: err } };
