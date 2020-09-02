@@ -1,6 +1,7 @@
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 
 import Database from '../database';
@@ -20,9 +21,8 @@ const UserController = {
 
     try {
       const database = new Database();
-      console.log(database);
       const connection = await database.getConnection();
-      console.log(connection);
+
       const user = await connection
         .getRepository(User)
         .save({ ...newUser, password: await hash(newUser.password, 10) });
@@ -44,6 +44,39 @@ const UserController = {
         };
       }
 
+      return { error: { code: 500, message: 'Internal Server Error', description: err } };
+    }
+  },
+  validateUserCredentials: async (
+    req: NextApiRequest
+  ): Promise<{ token?: string; error?: ApiError }> => {
+    const { email, password } = req.body;
+
+    try {
+      const database = new Database();
+      const connection = await database.getConnection();
+
+      const user = await connection.getRepository(User).findOne(email);
+      const passwordsMatch = user && (await compare(password, user?.password));
+
+      if (!passwordsMatch) {
+        return {
+          error: {
+            code: 401,
+            message: 'Unauthorized',
+            description: 'The credentials provided are not valid'
+          }
+        };
+      }
+
+      const token = jwt.sign({ sub: user.userId }, process.env.JWT_KEY, {
+        algorithm: 'HS256',
+        expiresIn: '1h'
+      });
+
+      return { token };
+    } catch (err) {
+      console.log(err);
       return { error: { code: 500, message: 'Internal Server Error', description: err } };
     }
   }
