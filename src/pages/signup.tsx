@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Router from 'next/router';
 import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
@@ -24,7 +25,9 @@ const initialFormState: FormState = {
 };
 
 const SignUp: React.FC = () => {
+  const [error, setError] = React.useState<string>(null);
   const [formState, setFormState] = React.useState<FormState>(initialFormState);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const isValidDate = (dateString: string) => {
     const regEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -54,7 +57,6 @@ const SignUp: React.FC = () => {
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log(event.target.value);
     setFormState({ ...formState, [event.target.name]: event.target.value });
   };
 
@@ -64,6 +66,8 @@ const SignUp: React.FC = () => {
     if (isValidFormState()) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...noConfirmPassword } = formState;
+
+      setIsLoading(true);
       const response = await fetch('/api/users', {
         method: 'POST',
         body: JSON.stringify(noConfirmPassword),
@@ -71,10 +75,21 @@ const SignUp: React.FC = () => {
           'Content-Type': 'application/json'
         }
       });
+      setIsLoading(false);
 
       const json = await response.json();
+
+      setError(response.ok ? null : json.message);
+
+      if (response.ok) {
+        await Router.push('/signin');
+      }
     }
   };
+
+  const submitButtonClass = `button ${error ? 'is-danger' : 'has-background-primary-dark'} ${
+    isLoading ? 'is-loading' : ''
+  }`;
 
   return (
     <>
@@ -112,12 +127,13 @@ const SignUp: React.FC = () => {
                         Email
                       </label>
                       <div className="control">
+                        {/* eslint-disable-next-line jsx-a11y/autocomplete-valid */}
                         <input
                           autoComplete="username"
                           className="input"
                           id="email"
                           name="email"
-                          type="text"
+                          type="email"
                           value={formState.email}
                           onChange={handleOnChange}
                           required
@@ -212,7 +228,7 @@ const SignUp: React.FC = () => {
 
                   <div className="field is-grouped">
                     <div className="control">
-                      <button className="button has-background-primary-dark" type="submit">
+                      <button className={submitButtonClass} type="submit">
                         Sign Up
                       </button>
                     </div>
@@ -223,6 +239,7 @@ const SignUp: React.FC = () => {
                       </Link>
                     </div>
                   </div>
+                  {error && <p className="help is-danger">{error}</p>}
                 </form>
               </div>
             </div>

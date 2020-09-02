@@ -19,8 +19,10 @@ const UserController = {
     }
 
     try {
-      const connection = await Database.fetchConnection();
-
+      const database = new Database();
+      console.log(database);
+      const connection = await database.getConnection();
+      console.log(connection);
       const user = await connection
         .getRepository(User)
         .save({ ...newUser, password: await hash(newUser.password, 10) });
@@ -28,6 +30,20 @@ const UserController = {
       return { user };
     } catch (err) {
       console.log(err);
+
+      if (
+        err.name === 'BadRequestException' &&
+        (err.message as string).startsWith('Duplicate entry')
+      ) {
+        return {
+          error: {
+            code: 409,
+            message: `Email address ${req.body.email} is already taken.`,
+            description: err
+          }
+        };
+      }
+
       return { error: { code: 500, message: 'Internal Server Error', description: err } };
     }
   }
