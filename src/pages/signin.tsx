@@ -1,10 +1,34 @@
-import Link from 'next/link';
+import Router from 'next/router';
 import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
 import Navbar from '../components/Navbar';
+import SigninForm, { SigninFormState } from '../components/SigninForm';
 
 const Signin: React.FC = () => {
+  const [error, setError] = React.useState<string>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const onSubmit = async (values: SigninFormState) => {
+    setLoading(true);
+    const response = await fetch('/api/signin', {
+      method: 'POST',
+      body: JSON.stringify(values),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setLoading(false);
+
+    const json = await response.json();
+
+    if (response.ok) {
+      await Router.push('/dashboard');
+    } else {
+      setError(json.message);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -15,43 +39,7 @@ const Signin: React.FC = () => {
               <div className="section">
                 <h1 className="title is-1">Sign In</h1>
                 <h3 className="subtitle is-3">Track your progress.</h3>
-
-                <div className="field">
-                  <div className="control is-expanded">
-                    <label className="label" htmlFor="email">
-                      Email
-                    </label>
-                    <div className="control">
-                      <input autoComplete="username" className="input" id="email" type="text" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="field">
-                  <label className="label" htmlFor="password">
-                    Password
-                  </label>
-                  <div className="control">
-                    <input
-                      autoComplete="current-password"
-                      className="input"
-                      id="password"
-                      type="password"
-                    />
-                  </div>
-                </div>
-
-                <div className="field is-grouped">
-                  <div className="control">
-                    <button className="button has-background-primary-dark">Sign In</button>
-                  </div>
-
-                  <div className="control">
-                    <Link href="/signup">
-                      <a className={`button is-link`}>Don&apos;t have an account? Sign Up.</a>
-                    </Link>
-                  </div>
-                </div>
+                <SigninForm error={error} loading={loading} onSubmit={onSubmit} />
               </div>
             </div>
           </div>
