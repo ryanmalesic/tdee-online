@@ -3,8 +3,7 @@ import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
 import Navbar from '../components/Navbar';
-import SigninForm from '../components/SigninForm';
-import { SigninFormState } from '../components/SigninForm/SigninForm';
+import SigninForm, { SigninFormState } from '../components/SigninForm';
 
 const Signin: React.FC = () => {
   const [error, setError] = React.useState<string>(null);
