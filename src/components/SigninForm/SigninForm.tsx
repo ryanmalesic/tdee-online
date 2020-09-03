@@ -9,10 +9,10 @@ export interface SigninFormProps {
   onSubmit: (values: SigninFormState) => void;
 }
 
-export type SigninFormState = {
+export interface SigninFormState {
   email: string;
   password: string;
-};
+}
 
 const initialValues: SigninFormState = {
   email: '',

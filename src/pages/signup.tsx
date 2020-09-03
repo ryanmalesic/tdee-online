@@ -4,8 +4,7 @@ import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
 import Navbar from '../components/Navbar';
-import SignupForm from '../components/SignupForm';
-import { SignupFormState } from '../components/SignupForm/SignupForm';
+import SignupForm, { SignupFormState } from '../components/SignupForm';
 
 const SignUp: React.FC = () => {
   const [error, setError] = React.useState<string>(null);

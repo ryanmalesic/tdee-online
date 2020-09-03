@@ -11,14 +11,14 @@ export interface SignupFormProps {
   onSubmit: (values: SignupFormState) => void;
 }
 
-export type SignupFormState = {
+export interface SignupFormState {
   firstName: string;
   email: string;
   password: string;
   confirmPassword: string;
   birthdate: string;
   sex: Sex;
-};
+}
 
 const initialValues: SignupFormState = {
   firstName: '',
