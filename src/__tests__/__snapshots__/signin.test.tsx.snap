@@ -116,75 +116,89 @@ Array [
               >
                 Track your progress.
               </h3>
-              <div
-                className="field"
+              <form
+                onSubmit={[Function]}
               >
                 <div
-                  className="control is-expanded"
+                  className="field"
+                >
+                  <div
+                    className="control is-expanded"
+                  >
+                    <label
+                      className="label"
+                      htmlFor="email"
+                    >
+                      Email
+                    </label>
+                    <div
+                      className="control"
+                    >
+                      <input
+                        autoComplete="username"
+                        className="input"
+                        id="email"
+                        name="email"
+                        onBlur={[Function]}
+                        onChange={[Function]}
+                        type="email"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="field"
                 >
                   <label
                     className="label"
-                    htmlFor="email"
+                    htmlFor="password"
                   >
-                    Email
+                    Password
                   </label>
                   <div
                     className="control"
                   >
                     <input
-                      autoComplete="username"
+                      autoComplete="new-password"
                       className="input"
-                      id="email"
-                      type="text"
+                      id="password"
+                      name="password"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      type="password"
+                      value=""
                     />
                   </div>
                 </div>
-              </div>
-              <div
-                className="field"
-              >
-                <label
-                  className="label"
-                  htmlFor="password"
-                >
-                  Password
-                </label>
                 <div
-                  className="control"
+                  className="field is-grouped"
                 >
-                  <input
-                    autoComplete="current-password"
-                    className="input"
-                    id="password"
-                    type="password"
-                  />
-                </div>
-              </div>
-              <div
-                className="field is-grouped"
-              >
-                <div
-                  className="control"
-                >
-                  <button
-                    className="button has-background-primary-dark"
+                  <div
+                    className="control"
                   >
-                    Sign In
-                  </button>
-                </div>
-                <div
-                  className="control"
-                >
-                  <a
-                    className="button is-link"
-                    href="/signup"
-                    onClick={[Function]}
-                    onMouseEnter={[Function]}
+                    <button
+                      className="button has-background-primary-dark "
+                      disabled={false}
+                      type="submit"
+                    >
+                      Sign In
+                    </button>
+                  </div>
+                  <div
+                    className="control"
                   >
-                    Don't have an account? Sign Up.
-                  </a>
+                    <a
+                      className="button is-link"
+                      href="/signup"
+                      onClick={[Function]}
+                      onMouseEnter={[Function]}
+                    >
+                      Don't have an account? Sign Up.
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>

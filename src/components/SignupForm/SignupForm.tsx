@@ -29,7 +29,7 @@ const initialValues: SignupFormState = {
   sex: Sex.Male
 };
 
-const SignupForm: React.FC<SignupFormProps> = (props: SignupFormProps) => {
+const SignupForm: React.FC<SignupFormProps> = (props) => {
   const { error, loading, onSubmit } = props;
 
   const validationSchema = Yup.object<SignupFormState>({

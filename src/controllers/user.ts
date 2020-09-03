@@ -18,8 +18,6 @@ const UserController = {
 
       return { user };
     } catch (err) {
-      console.log(err);
-
       if (
         err.name === 'BadRequestException' &&
         (err.message as string).startsWith('Duplicate entry')
@@ -45,8 +43,19 @@ const UserController = {
       const database = new Database();
       const connection = await database.getConnection();
 
-      const user = await connection.getRepository(User).findOne(email);
-      const passwordsMatch = user && (await compare(password, user?.password));
+      const user = await connection.getRepository(User).findOne({ where: { email } });
+
+      if (!user) {
+        return {
+          error: {
+            code: 401,
+            message: 'Unauthorized',
+            description: 'The credentials provided are not valid'
+          }
+        };
+      }
+
+      const passwordsMatch = await compare(password, user?.password);
 
       if (!passwordsMatch) {
         return {
@@ -60,7 +69,6 @@ const UserController = {
 
       return { user: _.omit(user, 'password') };
     } catch (err) {
-      console.log(err);
       return { error: { code: 500, message: 'Internal Server Error', description: err } };
     }
   }

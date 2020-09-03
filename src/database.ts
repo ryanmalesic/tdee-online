@@ -26,26 +26,20 @@ export class Database {
     const CONNECTION_NAME = `default`;
 
     if (this.connectionManager.has(CONNECTION_NAME)) {
-      const connection = await this.connectionManager.get(CONNECTION_NAME);
-
-      if (!connection.isConnected) {
-        await connection.connect();
-      }
-
-      return connection;
-    } else {
-      return await createConnection({
-        name: CONNECTION_NAME,
-        type: 'aurora-data-api',
-        database,
-        secretArn,
-        resourceArn,
-        region,
-        synchronize: true,
-        entities: [User],
-        namingStrategy: new SnakeNamingStrategy()
-      });
+      await this.connectionManager.get(CONNECTION_NAME).close();
     }
+
+    return await createConnection({
+      name: CONNECTION_NAME,
+      type: 'aurora-data-api',
+      database,
+      secretArn,
+      resourceArn,
+      region,
+      synchronize: true,
+      entities: [User],
+      namingStrategy: new SnakeNamingStrategy()
+    });
   }
 }
 
