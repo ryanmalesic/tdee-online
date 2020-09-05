@@ -4,7 +4,7 @@ import React from 'react';
 import * as Yup from 'yup';
 
 export interface SigninFormProps {
-  error: string;
+  error: string | null;
   loading: boolean;
   onSubmit: (values: SigninFormState) => void;
 }
@@ -80,20 +80,23 @@ const SigninForm: React.FC<SigninFormProps> = (props) => {
         )}
       </div>
 
-      <div className="field is-grouped">
-        <div className="control">
-          <button className={submitButtonClass} disabled={formik.isSubmitting} type="submit">
-            Sign In
-          </button>
+      <div className="field">
+        <div className="columns is-variable is-0-mobile is-3-tablet">
+          <div className="column is-narrow">
+            <div className="control">
+              <button className={submitButtonClass} disabled={formik.isSubmitting} type="submit">
+                Sign In
+              </button>
+            </div>
+          </div>
+          <div className="column">
+            <Link href="/signup">
+              <a className={`button is-link`}>Don&apos;t have an account? Sign Up.</a>
+            </Link>
+          </div>
         </div>
-
-        <div className="control">
-          <Link href="/signup">
-            <a className={`button is-link`}>Don&apos;t have an account? Sign Up.</a>
-          </Link>
-        </div>
+        {error && <p className="help is-danger">{error}</p>}
       </div>
-      {error && <p className="help is-danger">{error}</p>}
     </form>
   );
 };

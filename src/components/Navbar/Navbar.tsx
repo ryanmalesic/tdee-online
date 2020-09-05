@@ -7,7 +7,7 @@ const Navbar: React.FC = () => {
   const isActiveClass = isActive ? 'is-active' : '';
 
   return (
-    <nav className="navbar is-fixed-top" role="navigation">
+    <nav className="navbar" role="navigation">
       <div className="navbar-brand">
         <Link href="/">
           <a className="navbar-item">

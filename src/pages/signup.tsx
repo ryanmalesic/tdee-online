@@ -3,7 +3,6 @@ import Router from 'next/router';
 import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
-import Navbar from '../components/Navbar';
 import SignupForm, { SignupFormState } from '../components/SignupForm';
 
 const SignUp: React.FC = () => {
@@ -32,12 +31,11 @@ const SignUp: React.FC = () => {
 
   return (
     <>
-      <Navbar />
       <BackgroundLayout>
         <div className="container">
-          <div className="columns is-centered">
-            <div className="column is-half box">
-              <div className="section">
+          <div className="columns is-centered is-mobile">
+            <div className="column is-full-mobile is-half-tablet">
+              <div className="box">
                 <h1 className="title is-1">Sign Up</h1>
                 <h3 className="subtitle is-3">Start your journey.</h3>
                 <SignupForm error={error} loading={loading} onSubmit={onSubmit} />
