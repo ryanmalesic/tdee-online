@@ -3,8 +3,11 @@ import React from 'react';
 
 import BackgroundLayout from '../components/BackgroundLayout';
 import SigninForm, { SigninFormState } from '../components/SigninForm';
+import { useUser } from '../utils/hooks';
 
 const Signin: React.FC = () => {
+  const { mutate } = useUser({ redirectIfFound: true, redirectTo: '/dashboard' });
+
   const [error, setError] = React.useState<string>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -22,6 +25,7 @@ const Signin: React.FC = () => {
     const json = await response.json();
 
     if (response.ok) {
+      await mutate(json);
       await Router.push('/dashboard');
     } else {
       setError(json.message);
@@ -29,21 +33,19 @@ const Signin: React.FC = () => {
   };
 
   return (
-    <>
-      <BackgroundLayout>
-        <div className="container">
-          <div className="columns is-centered is-mobile">
-            <div className="column is-full-mobile is-half-tablet">
-              <div className="box">
-                <h1 className="title is-1">Sign In</h1>
-                <h3 className="subtitle is-3">Track your progess.</h3>
-                <SigninForm error={error} loading={loading} onSubmit={onSubmit} />
-              </div>
+    <BackgroundLayout>
+      <div className="container">
+        <div className="columns is-centered is-mobile">
+          <div className="column is-full-mobile is-half-tablet">
+            <div className="box">
+              <h1 className="title is-1">Sign In</h1>
+              <h3 className="subtitle is-3">Track your progess.</h3>
+              <SigninForm error={error} loading={loading} onSubmit={onSubmit} />
             </div>
           </div>
         </div>
-      </BackgroundLayout>
-    </>
+      </div>
+    </BackgroundLayout>
   );
 };
 

@@ -30,21 +30,19 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <>
-      <BackgroundLayout>
-        <div className="container">
-          <div className="columns is-centered is-mobile">
-            <div className="column is-full-mobile is-half-tablet">
-              <div className="box">
-                <h1 className="title is-1">Sign Up</h1>
-                <h3 className="subtitle is-3">Start your journey.</h3>
-                <SignupForm error={error} loading={loading} onSubmit={onSubmit} />
-              </div>
+    <BackgroundLayout>
+      <div className="container">
+        <div className="columns is-centered is-mobile">
+          <div className="column is-full-mobile is-half-tablet">
+            <div className="box">
+              <h1 className="title is-1">Sign Up</h1>
+              <h3 className="subtitle is-3">Start your journey.</h3>
+              <SignupForm error={error} loading={loading} onSubmit={onSubmit} />
             </div>
           </div>
         </div>
-      </BackgroundLayout>
-    </>
+      </div>
+    </BackgroundLayout>
   );
 };
 
