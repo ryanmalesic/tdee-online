@@ -1,8 +1,21 @@
 import Link from 'next/link';
 import React from 'react';
 
+import { useUser } from '../../utils/hooks';
+
 const Navbar: React.FC = () => {
+  const { data, mutate } = useUser();
   const [isActive, setIsActive] = React.useState(false);
+
+  const handleOnSignoutClick = async () => {
+    await fetch('/api/signout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    await mutate(null);
+  };
 
   const isActiveClass = isActive ? 'is-active' : '';
 
@@ -42,14 +55,26 @@ const Navbar: React.FC = () => {
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <Link href="/signup">
-                <a className="button has-background-primary-dark">
-                  <strong>Sign up</strong>
-                </a>
-              </Link>
-              <Link href="/signin">
-                <a className="button has-text-dark has-background-grey-lighter">Sign in</a>
-              </Link>
+              {!data ? (
+                <>
+                  <Link href="/signup">
+                    <a className="button has-background-primary-dark">
+                      <strong>Sign up</strong>
+                    </a>
+                  </Link>
+                  <Link href="/signin">
+                    <a className="button has-text-dark has-background-grey-lighter">Sign in</a>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="button has-text-dark has-background-grey-lighter"
+                    onClick={handleOnSignoutClick}>
+                    Sign out
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

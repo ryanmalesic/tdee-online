@@ -25,7 +25,7 @@ const Signin: React.FC = () => {
     const json = await response.json();
 
     if (response.ok) {
-      await mutate(json, true);
+      await mutate(json);
       await Router.push('/dashboard');
     } else {
       setError(json.message);
