@@ -13,7 +13,7 @@ const handler = async (
   if (error) {
     res.status(error.code).json(error);
   } else {
-    req.session.set('user', user.userId);
+    req.session.set('user', user.id);
     await req.session.save();
 
     res.status(201).json(user);

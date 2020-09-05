@@ -1,6 +1,6 @@
 import ApiError from './apiError';
 import Sex from './sex';
-import IUser from './user';
+import User from './user';
 
-export type { ApiError, IUser };
+export type { ApiError, User };
 export { Sex };

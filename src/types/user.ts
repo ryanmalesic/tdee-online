@@ -1,7 +1,7 @@
 import { Sex } from '.';
 
-type IUser = {
-  userId: string;
+type User = {
+  id: string;
   firstName: string;
   email: string;
   password?: string;
@@ -9,4 +9,4 @@ type IUser = {
   sex: Sex;
 };
 
-export default IUser;
+export default User;

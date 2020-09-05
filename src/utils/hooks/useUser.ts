@@ -2,7 +2,7 @@ import Router from 'next/router';
 import { useEffect } from 'react';
 import useSWR, { responseInterface } from 'swr';
 
-import { IUser } from '../../types';
+import { User } from '../../types';
 
 export interface useUserProps {
   redirectTo?: string;
@@ -10,10 +10,10 @@ export interface useUserProps {
 }
 
 const useUser = ({ redirectTo, redirectIfFound }: useUserProps = {}): responseInterface<
-  IUser,
+  User,
   Error
 > => {
-  const { data, error, isValidating, revalidate, mutate } = useSWR<IUser, Error>('/api/users/me');
+  const { data, error, isValidating, revalidate, mutate } = useSWR<User, Error>('/api/users/me');
 
   useEffect(() => {
     if (!redirectTo) {
@@ -21,7 +21,7 @@ const useUser = ({ redirectTo, redirectIfFound }: useUserProps = {}): responseIn
     }
 
     if (
-      (redirectTo && !redirectIfFound && !data && error) ||
+      (redirectTo && !redirectIfFound && error) ||
       (redirectTo && redirectIfFound && data && !error)
     ) {
       Router.push(redirectTo);

@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { UserController } from '../../../controllers';
-import { User } from '../../../entities';
-import { withEntitiyValidation, withMethods } from '../../../utils/middleware';
+import { withMethods } from '../../../utils/middleware';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   const { user, error } = await UserController.createUser(req);
@@ -14,4 +13,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
   }
 };
 
-export default withMethods(withEntitiyValidation(handler, User), ['POST']);
+export default withMethods(handler, ['POST']);
