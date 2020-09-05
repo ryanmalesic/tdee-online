@@ -57,30 +57,38 @@ exports[`renders SigninForm unchanged 1`] = `
     </div>
   </div>
   <div
-    className="field is-grouped"
+    className="field"
   >
     <div
-      className="control"
+      className="columns is-variable is-0-mobile is-3-tablet"
     >
-      <button
-        className="button has-background-primary-dark "
-        disabled={false}
-        type="submit"
+      <div
+        className="column is-narrow"
       >
-        Sign In
-      </button>
-    </div>
-    <div
-      className="control"
-    >
-      <a
-        className="button is-link"
-        href="/signup"
-        onClick={[Function]}
-        onMouseEnter={[Function]}
+        <div
+          className="control"
+        >
+          <button
+            className="button has-background-primary-dark "
+            disabled={false}
+            type="submit"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+      <div
+        className="column"
       >
-        Don't have an account? Sign Up.
-      </a>
+        <a
+          className="button is-link"
+          href="/signup"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+        >
+          Don't have an account? Sign Up.
+        </a>
+      </div>
     </div>
   </div>
 </form>
