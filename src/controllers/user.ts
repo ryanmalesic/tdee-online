@@ -34,6 +34,42 @@ const UserController = {
       return { error: { code: 500, message: 'Internal Server Error', description: err } };
     }
   },
+  getUser: async (
+    req: NextApiRequest & { session: any }
+  ): Promise<{ user?: Partial<User>; error?: ApiError }> => {
+    const userId = req.session.get('user');
+
+    if (!userId) {
+      return {
+        error: {
+          code: 401,
+          message: 'Unauthorized',
+          description: 'You are not logged in!'
+        }
+      };
+    }
+
+    try {
+      const database = new Database();
+      const connection = await database.getConnection();
+
+      const user = await connection.getRepository(User).findOne(userId);
+
+      if (!user) {
+        return {
+          error: {
+            code: 401,
+            message: 'Unauthorized',
+            description: 'You are not logged in!'
+          }
+        };
+      }
+
+      return { user: _.omit(user, 'password') };
+    } catch (err) {
+      return { error: { code: 500, message: 'Internal Server Error', description: err } };
+    }
+  },
   validateUserCredentials: async (
     req: NextApiRequest
   ): Promise<{ user?: Partial<User>; error?: ApiError }> => {
