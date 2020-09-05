@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 import { useUser } from '../../utils/hooks';
 
 const Navbar: React.FC = () => {
+  const router = useRouter();
   const { data, mutate } = useUser();
+
   const [isActive, setIsActive] = React.useState(false);
 
   const handleOnSignoutClick = async () => {
@@ -15,6 +18,7 @@ const Navbar: React.FC = () => {
       }
     });
     await mutate(null);
+    await router.push('/signin');
   };
 
   const isActiveClass = isActive ? 'is-active' : '';
@@ -50,6 +54,11 @@ const Navbar: React.FC = () => {
           <Link href="/">
             <a className="navbar-item">Home</a>
           </Link>
+          {data && (
+            <Link href="/dashboard">
+              <a className="navbar-item">Dashboard</a>
+            </Link>
+          )}
         </div>
 
         <div className="navbar-end">

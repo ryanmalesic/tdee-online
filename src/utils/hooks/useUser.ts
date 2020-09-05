@@ -13,7 +13,9 @@ const useUser = ({ redirectTo, redirectIfFound }: useUserProps = {}): responseIn
   User,
   Error
 > => {
-  const { data, error, isValidating, revalidate, mutate } = useSWR<User, Error>('/api/users/me');
+  const { data, error, isValidating, revalidate, mutate } = useSWR<User, Error>('/api/users/me', {
+    revalidateOnFocus: false
+  });
 
   useEffect(() => {
     if (!redirectTo) {

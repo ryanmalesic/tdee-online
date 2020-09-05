@@ -1,13 +1,10 @@
 import { useFormik } from 'formik';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import * as Yup from 'yup';
 
-export interface SigninFormProps {
-  error: string | null;
-  loading: boolean;
-  onSubmit: (values: SigninFormState) => void;
-}
+import { useUser } from '../../utils/hooks';
 
 export interface SigninFormState {
   email: string;
@@ -19,8 +16,33 @@ const initialValues: SigninFormState = {
   password: ''
 };
 
-const SigninForm: React.FC<SigninFormProps> = (props) => {
-  const { error, loading, onSubmit } = props;
+const SigninForm: React.FC = () => {
+  const router = useRouter();
+  const { mutate } = useUser({ redirectIfFound: true, redirectTo: '/dashboard' });
+
+  const [error, setError] = React.useState<string>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const onSubmit = async (values: SigninFormState) => {
+    setLoading(true);
+    const response = await fetch('/api/signin', {
+      method: 'POST',
+      body: JSON.stringify(values),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setLoading(false);
+
+    const json = await response.json();
+
+    if (response.ok) {
+      await mutate(json);
+      await router.push('/dashboard');
+    } else {
+      setError(json.message);
+    }
+  };
 
   const validationSchema = Yup.object<SigninFormState>({
     email: Yup.string().email('Invalid email address').required('Email is required'),

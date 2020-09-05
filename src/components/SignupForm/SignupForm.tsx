@@ -1,15 +1,11 @@
 import { useFormik } from 'formik';
+import _ from 'lodash';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import * as Yup from 'yup';
 
 import { Sex } from '../../types';
-
-export interface SignupFormProps {
-  error: string | null;
-  loading: boolean;
-  onSubmit: (values: SignupFormState) => void;
-}
 
 export interface SignupFormState {
   firstName: string;
@@ -29,8 +25,31 @@ const initialValues: SignupFormState = {
   sex: Sex.Male
 };
 
-const SignupForm: React.FC<SignupFormProps> = (props) => {
-  const { error, loading, onSubmit } = props;
+const SignupForm: React.FC = () => {
+  const router = useRouter();
+
+  const [error, setError] = React.useState<string>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const onSubmit = async (values: SignupFormState) => {
+    setLoading(true);
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      body: JSON.stringify(_.omit(values, ['confirmPassword'])),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setLoading(false);
+
+    const json = await response.json();
+
+    if (response.ok) {
+      await router.push('/signin');
+    } else {
+      setError(json.message);
+    }
+  };
 
   const validationSchema = Yup.object<SignupFormState>({
     firstName: Yup.string().required('First name is required'),
