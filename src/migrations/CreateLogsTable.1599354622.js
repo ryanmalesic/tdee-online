@@ -8,21 +8,21 @@ const rds = require('data-api-client')({
 
 const up = async () => {
   await rds.query(
-    `CREATE TABLE users (
+    `CREATE TABLE logs (
         \`id\` INT NOT NULL AUTO_INCREMENT,
-        \`first_name\` VARCHAR(255) NOT NULL,
-        \`email\` VARCHAR(255) NOT NULL,
-        \`password\` VARCHAR(255) NOT NULL,
-        \`birthdate\` DATE NOT NULL,
-        \`sex\` ENUM('MALE', 'FEMALE'),
+        \`date\` DATE NOT NULL,
+        \`weight\` INTEGER NOT NULL,
+        \`caloricIntake\` DECIMAL (4, 1) NOT NULL,
+        \`userId\` INTEGER NOT NULL,
         PRIMARY KEY (\`id\`),
-        UNIQUE (\`email\`)
+        FOREIGN KEY (\`userId\`) REFERENCES users (\`id\`) ON DELETE CASCADE,
+        UNIQUE (\`date\`, \`userId\`)
     );`
   );
 };
 
 const down = async () => {
-  await rds.query(`DROP TABLE users;`);
+  await rds.query(`DROP TABLE logs;`);
 };
 
 (async () => {
