@@ -1,5 +1,4 @@
 import { useFormik } from 'formik';
-import _ from 'lodash';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -35,7 +34,7 @@ const SignupForm: React.FC = () => {
     setLoading(true);
     const response = await fetch('/api/users', {
       method: 'POST',
-      body: JSON.stringify(_.omit(values, ['confirmPassword'])),
+      body: JSON.stringify(values),
       headers: {
         'Content-Type': 'application/json'
       }

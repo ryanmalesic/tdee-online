@@ -1,12 +1,13 @@
-import DataApiClient from 'data-api-client';
-
 const {
+  AWS_REGION: region,
   DB_DATABASE: database,
   DB_RESOURCE_ARN: resourceArn,
   DB_SECRET_ARN: secretArn
 } = process.env;
 
-const rds = DataApiClient({
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const rds = require('data-api-client')({
+  region,
   secretArn,
   resourceArn,
   database
