@@ -2,8 +2,8 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import * as Yup from 'yup';
 
+import { UserSchema } from '../../schema';
 import { Sex } from '../../types';
 
 export interface SignupFormState {
@@ -50,41 +50,7 @@ const SignupForm: React.FC = () => {
     }
   };
 
-  const validationSchema = Yup.object<SignupFormState>({
-    firstName: Yup.string().required('First name is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must be at least 8 characters long')
-      .required('Password is required'),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required('Confirm Password is required'),
-    birthdate: Yup.string()
-      .test('date-valid', 'Date must be in the format yyyy-mm-dd', (value) => {
-        if (!value) {
-          return false;
-        }
-
-        const regEx = /^\d{4}-\d{2}-\d{2}$/;
-
-        if (!value.match(regEx)) {
-          return false;
-        }
-
-        const date = new Date(value);
-        const dateTime = date.getTime();
-
-        if (!dateTime && dateTime !== 0) {
-          return false;
-        }
-
-        return value === date.toISOString().slice(0, 10);
-      })
-      .required('Birthdate is required'),
-    sex: Yup.string().oneOf([Sex.Male, Sex.Female]).required('Sex is required')
-  });
-
-  const formik = useFormik({ initialValues, validationSchema, onSubmit });
+  const formik = useFormik({ initialValues, validationSchema: UserSchema, onSubmit });
 
   const submitButtonClass = `button ${error ? 'is-danger' : 'has-background-primary-dark'} ${
     loading ? 'is-loading' : ''

@@ -1,12 +1,7 @@
 import { useFormik } from 'formik';
 import React from 'react';
-import * as Yup from 'yup';
 
-export interface DashboardAddLogFormProps {
-  error: string | null;
-  loading: boolean;
-  onSubmit: (values: DashboardAddLogFormState) => void;
-}
+import { LogSchema } from '../../schema';
 
 export interface DashboardAddLogFormState {
   date: string;
@@ -20,47 +15,36 @@ const initialValues: DashboardAddLogFormState = {
   caloricIntake: 0
 };
 
-const DashboardAddLogForm: React.FC<DashboardAddLogFormProps> = (props) => {
-  const { error, loading, onSubmit } = props;
+const DashboardAddLogForm: React.FC = () => {
+  const [error, setError] = React.useState<string>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
-  const validationSchema = Yup.object<DashboardAddLogFormState>({
-    date: Yup.string()
-      .test('date-valid', 'Date must be in the format yyyy-mm-dd', (value) => {
-        if (!value) {
-          return false;
-        }
+  const onSubmit = async (values: DashboardAddLogFormState) => {
+    setLoading(true);
+    const response = await fetch('/api/logs', {
+      method: 'POST',
+      body: JSON.stringify(values),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setLoading(false);
 
-        const regEx = /^\d{4}-\d{2}-\d{2}$/;
+    const json = await response.json();
 
-        if (!value.match(regEx)) {
-          return false;
-        }
+    if (!response.ok) {
+      setError(json.message);
+    }
+  };
 
-        const date = new Date(value);
-        const dateTime = date.getTime();
-
-        if (!dateTime && dateTime !== 0) {
-          return false;
-        }
-
-        return value === date.toISOString().slice(0, 10);
-      })
-      .required('Date is required'),
-    weight: Yup.number().positive('Weight must be a positive value').required('Weight is required'),
-    caloricIntake: Yup.number()
-      .integer('Caloric intake must be an integer value')
-      .min(0, 'Caloric intake must greater than or equal to 0')
-      .required('Caloric intake is required')
-  });
-
-  const formik = useFormik({ initialValues, validationSchema, onSubmit });
+  const formik = useFormik({ initialValues, validationSchema: LogSchema, onSubmit });
 
   const submitButtonClass = `button ${error ? 'is-danger' : 'has-background-primary-dark'} ${
     loading ? 'is-loading' : ''
   }`;
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form noValidate onSubmit={formik.handleSubmit}>
       <div className="columns">
         <div className="column">
           <div className="field">
@@ -97,6 +81,7 @@ const DashboardAddLogForm: React.FC<DashboardAddLogFormProps> = (props) => {
                 id="weight"
                 name="weight"
                 type="number"
+                step="0.1"
                 value={formik.values.weight}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}

@@ -11,12 +11,12 @@ const up = async () => {
     `CREATE TABLE logs (
         \`id\` INT NOT NULL AUTO_INCREMENT,
         \`date\` DATE NOT NULL,
-        \`weight\` INTEGER NOT NULL,
-        \`caloricIntake\` DECIMAL (4, 1) NOT NULL,
-        \`userId\` INTEGER NOT NULL,
+        \`weight\` DECIMAL (4, 1) NOT NULL,
+        \`caloric_intake\`  INTEGER NOT NULL,
+        \`user_id\` INTEGER NOT NULL,
         PRIMARY KEY (\`id\`),
-        FOREIGN KEY (\`userId\`) REFERENCES users (\`id\`) ON DELETE CASCADE,
-        UNIQUE (\`date\`, \`userId\`)
+        FOREIGN KEY (\`user_id\`) REFERENCES users (\`id\`) ON DELETE CASCADE,
+        UNIQUE (\`date\`, \`user_id\`)
     );`
   );
 };

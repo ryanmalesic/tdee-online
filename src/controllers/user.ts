@@ -1,6 +1,7 @@
 import { compare, hash } from 'bcrypt';
 import _ from 'lodash';
 import { NextApiRequest } from 'next';
+import { ValidationError } from 'yup';
 
 import rds from '../database';
 import { UserSchema } from '../schema';
@@ -9,9 +10,11 @@ import { isApiError } from '../types/apiError';
 
 const UserController = {
   createUser: async (req: NextApiRequest): Promise<{ user?: User; error?: ApiError }> => {
-    const validated: User | ApiError = await UserSchema.validateAsync(req.body).catch((err) => {
-      return { code: 422, message: 'Unprocessable Entity', description: err.message };
-    });
+    const validated: User | ApiError = await UserSchema.validate(req.body).catch(
+      (err: ValidationError) => {
+        return { code: 422, message: 'Unprocessable Entity', errors: err.errors };
+      }
+    );
 
     if (isApiError(validated)) {
       return { error: validated };
@@ -26,8 +29,7 @@ const UserController = {
       .query(
         `
         INSERT INTO users (first_name, email, password, birthdate, sex)
-          VALUES (:firstName, :email, :password, :birthdate, :sex
-        );
+          VALUES (:firstName, :email, :password, :birthdate, :sex);
         `,
         queryParams
       )
@@ -66,7 +68,7 @@ const UserController = {
     }
 
     const data: ApiError | any = await rds
-      .query(`SELECT * FROM users WHERE id = :id`, { id })
+      .query(`SELECT * FROM users WHERE id = :id;`, { id })
       .catch((err) => {
         return { code: 500, message: 'Internal Server Error', description: err.message };
       });
@@ -91,7 +93,7 @@ const UserController = {
     const { email, password } = req.body;
 
     const data = await rds
-      .query(`SELECT * FROM users WHERE email = :email`, { email })
+      .query(`SELECT * FROM users WHERE email = :email;`, { email })
       .catch((err) => {
         return { code: 500, message: 'Internal Server Error', description: err.message };
       });

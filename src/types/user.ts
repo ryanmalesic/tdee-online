@@ -1,11 +1,12 @@
 import { Sex } from '.';
 
 type User = {
-  id: string;
+  id?: string;
   firstName: string;
   email: string;
   password?: string;
-  birtdate: string;
+  confirmPassword?: string;
+  birthdate: string;
   sex: Sex;
 };
 

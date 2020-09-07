@@ -4,8 +4,6 @@ import renderer from 'react-test-renderer';
 import DashboardAddLogForm from './DashboardAddLogForm';
 
 it('renders DashboardAddLogForm unchanged', () => {
-  const tree = renderer
-    .create(<DashboardAddLogForm error={null} loading={false} onSubmit={jest.fn()} />)
-    .toJSON();
+  const tree = renderer.create(<DashboardAddLogForm />).toJSON();
   expect(tree).toMatchSnapshot();
 });

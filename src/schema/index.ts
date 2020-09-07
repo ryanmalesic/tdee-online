@@ -1,3 +1,4 @@
+import LogSchema from './log';
 import UserSchema from './user';
 
-export { UserSchema };
+export { LogSchema, UserSchema };
