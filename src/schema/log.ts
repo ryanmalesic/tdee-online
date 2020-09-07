@@ -7,7 +7,10 @@ const LogSchema = Yup.object<Log>({
   date: Yup.string()
     .test('date-valid', 'Date must be in the format yyyy-mm-dd', testDate)
     .required('Date is required'),
-  weight: Yup.number().positive('Weight must be a positive value').required('Weight is required'),
+  weight: Yup.number()
+    .positive('Weight must be a positive value')
+    .max(999.9, 'Weight must be less than 1000')
+    .required('Weight is required'),
   caloricIntake: Yup.number()
     .integer('Caloric intake must be an integer value')
     .min(0, 'Caloric intake must greater than or equal to 0')

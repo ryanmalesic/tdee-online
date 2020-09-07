@@ -106,7 +106,10 @@ const SigninForm: React.FC = () => {
         <div className="columns is-variable is-0-mobile is-3-tablet">
           <div className="column is-narrow">
             <div className="control">
-              <button className={submitButtonClass} disabled={formik.isSubmitting} type="submit">
+              <button
+                className={submitButtonClass}
+                disabled={formik.isSubmitting || !formik.isValid}
+                type="submit">
                 Sign In
               </button>
             </div>

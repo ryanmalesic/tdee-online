@@ -118,7 +118,10 @@ const DashboardAddLogForm: React.FC = () => {
 
       <div className="field ">
         <div className="control">
-          <button className={submitButtonClass} disabled={formik.isSubmitting} type="submit">
+          <button
+            className={submitButtonClass}
+            disabled={formik.isSubmitting || !formik.isValid}
+            type="submit">
             Add log
           </button>
         </div>
