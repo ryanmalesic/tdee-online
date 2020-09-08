@@ -2,6 +2,12 @@ import { useFormik } from 'formik';
 import React from 'react';
 
 import { LogSchema } from '../../schema';
+import { Log } from '../../types';
+
+export interface DashboardAddLogFormProps {
+  mutateLog: (log: Log) => void;
+  revalidateTdee: () => void;
+}
 
 export interface DashboardAddLogFormState {
   date: string;
@@ -15,7 +21,9 @@ const initialValues: DashboardAddLogFormState = {
   caloricIntake: 0
 };
 
-const DashboardAddLogForm: React.FC = () => {
+const DashboardAddLogForm: React.FC<DashboardAddLogFormProps> = (props) => {
+  const { mutateLog, revalidateTdee } = props;
+
   const [error, setError] = React.useState<string>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -32,7 +40,15 @@ const DashboardAddLogForm: React.FC = () => {
 
     const json = await response.json();
 
-    if (!response.ok) {
+    if (response.ok) {
+      formik.resetForm();
+
+      if (values.date === new Date().toISOString().slice(0, 10)) {
+        await mutateLog(json);
+      }
+
+      await revalidateTdee();
+    } else {
       setError(json.message);
     }
   };
@@ -44,91 +60,94 @@ const DashboardAddLogForm: React.FC = () => {
   }`;
 
   return (
-    <form noValidate onSubmit={formik.handleSubmit}>
-      <div className="columns">
-        <div className="column">
-          <div className="field">
-            <label className="label" htmlFor="date">
-              Date
-            </label>
-            <div className="control">
-              {/* eslint-disable-next-line jsx-a11y/autocomplete-valid */}
-              <input
-                className="input"
-                id="date"
-                name="date"
-                placeholder="yyyy-mm-dd"
-                type="date"
-                value={formik.values.date}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
+    <div className="box">
+      <h2 className="title is-2">Add a log</h2>
+      <form noValidate onSubmit={formik.handleSubmit}>
+        <div className="columns">
+          <div className="column">
+            <div className="field">
+              <label className="label" htmlFor="date">
+                Date
+              </label>
+              <div className="control">
+                {/* eslint-disable-next-line jsx-a11y/autocomplete-valid */}
+                <input
+                  className="input"
+                  id="date"
+                  name="date"
+                  placeholder="yyyy-mm-dd"
+                  type="date"
+                  value={formik.values.date}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+              {formik.errors.date && formik.touched.date && (
+                <p className="help is-danger">{formik.errors.date}</p>
+              )}
             </div>
-            {formik.errors.date && formik.touched.date && (
-              <p className="help is-danger">{formik.errors.date}</p>
-            )}
+          </div>
+
+          <div className="column">
+            <div className="field">
+              <label className="label" htmlFor="weight">
+                Weight
+              </label>
+              <div className="control">
+                <input
+                  className="input"
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  step="0.1"
+                  value={formik.values.weight}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+              {formik.errors.weight && formik.touched.weight && (
+                <p className="help is-danger">{formik.errors.weight}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="column">
+            <div className="field">
+              <label className="label" htmlFor="caloricIntake">
+                Caloric Intake
+              </label>
+              <div className="control">
+                <input
+                  className="input"
+                  id="caloricIntake"
+                  name="caloricIntake"
+                  type="number"
+                  value={formik.values.caloricIntake}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+              {formik.errors.caloricIntake && formik.touched.caloricIntake && (
+                <p className="help is-danger">{formik.errors.caloricIntake}</p>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="column">
-          <div className="field">
-            <label className="label" htmlFor="weight">
-              Weight
-            </label>
-            <div className="control">
-              <input
-                className="input"
-                id="weight"
-                name="weight"
-                type="number"
-                step="0.1"
-                value={formik.values.weight}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-            </div>
-            {formik.errors.weight && formik.touched.weight && (
-              <p className="help is-danger">{formik.errors.weight}</p>
-            )}
+        <div className="field ">
+          <div className="control">
+            <button
+              className={submitButtonClass}
+              disabled={formik.isSubmitting || !formik.isValid}
+              type="submit">
+              Add log
+            </button>
           </div>
         </div>
 
-        <div className="column">
-          <div className="field">
-            <label className="label" htmlFor="caloricIntake">
-              Caloric Intake
-            </label>
-            <div className="control">
-              <input
-                className="input"
-                id="caloricIntake"
-                name="caloricIntake"
-                type="number"
-                value={formik.values.caloricIntake}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-            </div>
-            {formik.errors.caloricIntake && formik.touched.caloricIntake && (
-              <p className="help is-danger">{formik.errors.caloricIntake}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="field ">
-        <div className="control">
-          <button
-            className={submitButtonClass}
-            disabled={formik.isSubmitting || !formik.isValid}
-            type="submit">
-            Add log
-          </button>
-        </div>
-      </div>
-
-      {error && <p className="help is-danger">{error}</p>}
-    </form>
+        {error && <p className="help is-danger">{error}</p>}
+      </form>
+    </div>
   );
 };
 

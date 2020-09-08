@@ -1,111 +1,120 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders DashboardAddLogForm unchanged 1`] = `
-<form
-  noValidate={true}
-  onSubmit={[Function]}
+<div
+  className="box"
 >
-  <div
-    className="columns"
+  <h2
+    className="title is-2"
+  >
+    Add a log
+  </h2>
+  <form
+    noValidate={true}
+    onSubmit={[Function]}
   >
     <div
-      className="column"
+      className="columns"
     >
       <div
-        className="field"
+        className="column"
       >
-        <label
-          className="label"
-          htmlFor="date"
-        >
-          Date
-        </label>
         <div
-          className="control"
+          className="field"
         >
-          <input
-            className="input"
-            id="date"
-            name="date"
-            onBlur={[Function]}
-            onChange={[Function]}
-            placeholder="yyyy-mm-dd"
-            type="date"
-            value="2020-09-07"
-          />
+          <label
+            className="label"
+            htmlFor="date"
+          >
+            Date
+          </label>
+          <div
+            className="control"
+          >
+            <input
+              className="input"
+              id="date"
+              name="date"
+              onBlur={[Function]}
+              onChange={[Function]}
+              placeholder="yyyy-mm-dd"
+              type="date"
+              value="2020-09-08"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="column"
+      >
+        <div
+          className="field"
+        >
+          <label
+            className="label"
+            htmlFor="weight"
+          >
+            Weight
+          </label>
+          <div
+            className="control"
+          >
+            <input
+              className="input"
+              id="weight"
+              name="weight"
+              onBlur={[Function]}
+              onChange={[Function]}
+              step="0.1"
+              type="number"
+              value={0}
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="column"
+      >
+        <div
+          className="field"
+        >
+          <label
+            className="label"
+            htmlFor="caloricIntake"
+          >
+            Caloric Intake
+          </label>
+          <div
+            className="control"
+          >
+            <input
+              className="input"
+              id="caloricIntake"
+              name="caloricIntake"
+              onBlur={[Function]}
+              onChange={[Function]}
+              type="number"
+              value={0}
+            />
+          </div>
         </div>
       </div>
     </div>
     <div
-      className="column"
+      className="field "
     >
       <div
-        className="field"
+        className="control"
       >
-        <label
-          className="label"
-          htmlFor="weight"
+        <button
+          className="button has-background-primary-dark "
+          disabled={false}
+          type="submit"
         >
-          Weight
-        </label>
-        <div
-          className="control"
-        >
-          <input
-            className="input"
-            id="weight"
-            name="weight"
-            onBlur={[Function]}
-            onChange={[Function]}
-            step="0.1"
-            type="number"
-            value={0}
-          />
-        </div>
+          Add log
+        </button>
       </div>
     </div>
-    <div
-      className="column"
-    >
-      <div
-        className="field"
-      >
-        <label
-          className="label"
-          htmlFor="caloricIntake"
-        >
-          Caloric Intake
-        </label>
-        <div
-          className="control"
-        >
-          <input
-            className="input"
-            id="caloricIntake"
-            name="caloricIntake"
-            onBlur={[Function]}
-            onChange={[Function]}
-            type="number"
-            value={0}
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="field "
-  >
-    <div
-      className="control"
-    >
-      <button
-        className="button has-background-primary-dark "
-        disabled={false}
-        type="submit"
-      >
-        Add log
-      </button>
-    </div>
-  </div>
-</form>
+  </form>
+</div>
 `;

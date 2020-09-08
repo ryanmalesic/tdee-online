@@ -7,6 +7,7 @@ import rds from '../database';
 import { UserSchema } from '../schema';
 import { ApiError, User } from '../types';
 import { isApiError } from '../types/apiError';
+import { getWeekEnd, getWeekStart } from '../utils/date';
 
 const UserController = {
   createUser: async (req: NextApiRequest): Promise<{ user?: User; error?: ApiError }> => {
@@ -77,15 +78,67 @@ const UserController = {
       return { error: data };
     }
 
-    const user: User = data.records[0];
-
-    if (!user) {
+    if (data.records.length === 0) {
       return {
         error: { code: 401, message: 'Unauthorized', description: 'You are not logged in!' }
       };
     }
 
+    const user: User = data.records[0];
+
     return { user: _.omit(user, 'password') };
+  },
+  getUserTdee: async (
+    req: NextApiRequest & { session: any }
+  ): Promise<{ tdee?: number; error?: ApiError }> => {
+    const id = req.session.get('user');
+
+    if (!id) {
+      return {
+        error: { code: 401, message: 'Unauthorized', description: 'You are not logged in!' }
+      };
+    }
+
+    const data: ApiError | any = await rds
+      .query(
+        `(
+            SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
+              FROM logs WHERE user_id = :userId
+              AND (date BETWEEN :lastWeekStart AND :lastWeekEnd)
+          ) UNION (
+            SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
+              FROM logs WHERE user_id = :userId
+              AND (date BETWEEN :currentWeekStart AND :currentWeekEnd)
+          ) ORDER BY firstLogDate;`,
+        {
+          userId: id,
+          lastWeekStart: getWeekStart(-1),
+          lastWeekEnd: getWeekEnd(-1),
+          currentWeekStart: getWeekStart(),
+          currentWeekEnd: getWeekEnd()
+        }
+      )
+      .catch((err) => {
+        return { code: 500, message: 'Internal Server Error', description: err.message };
+      });
+
+    if (isApiError(data)) {
+      return { error: data };
+    }
+
+    if (data.records[0].firstLogDate === null) {
+      return {
+        error: {
+          code: 404,
+          message: 'Not Found',
+          description: 'Not enough data to calculate the TDEE'
+        }
+      };
+    }
+
+    const deltaWeight = data.records[1].averageWeight - data.records[0].averageWeight;
+
+    return { tdee: data.records[1].averageCaloricIntake - deltaWeight * 500 };
   },
   validateUserCredentials: async (
     req: NextApiRequest

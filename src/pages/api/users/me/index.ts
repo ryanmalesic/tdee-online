@@ -1,6 +1,6 @@
-import { UserController } from '../../../controllers';
-import { withMethods } from '../../../utils/middleware';
-import withSession from '../../../utils/session';
+import { UserController } from '../../../../controllers';
+import { withMethods } from '../../../../utils/middleware';
+import withSession from '../../../../utils/session';
 
 const handler = async (req, res) => {
   const { user, error } = await UserController.getUser(req);

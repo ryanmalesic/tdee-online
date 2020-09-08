@@ -1,3 +1,5 @@
+import useLogToday from './useLogToday';
+import useTdee from './useTdee';
 import useUser from './useUser';
 
-export { useUser };
+export { useLogToday, useUser, useTdee };

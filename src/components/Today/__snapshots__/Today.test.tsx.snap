@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Today unchanged 1`] = `
+<div
+  className="box"
+>
+  <h1
+    className="title is-2"
+  >
+    Today
+  </h1>
+  <h3
+    className="subtitle is-4"
+  >
+    Your log for today
+  </h3>
+  <div
+    className="container has-text-centered"
+  >
+    <div
+      className="level"
+    >
+      <div
+        className="level-item has-text-centered"
+      >
+        <p
+          className="subtitle is-3"
+        >
+          <strong
+            className="has-text-primary"
+          >
+            170
+          </strong>
+           lbs
+        </p>
+      </div>
+      <div
+        className="level-item has-text-centered"
+      >
+        <p
+          className="subtitle is-3"
+        >
+          <strong
+            className="has-text-primary"
+          >
+            3500
+          </strong>
+           kCals
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
