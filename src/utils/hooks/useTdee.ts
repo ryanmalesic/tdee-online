@@ -6,7 +6,8 @@ const useLogToday = (user: User): responseInterface<Tdee, Error> => {
   const { data, error, isValidating, revalidate, mutate } = useSWR<Tdee, Error>(
     user && '/api/users/me/tdee',
     {
-      shouldRetryOnError: false
+      shouldRetryOnError: false,
+      revalidateOnFocus: false
     }
   );
 
