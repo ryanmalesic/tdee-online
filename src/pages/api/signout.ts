@@ -1,12 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 
-import { withMethods } from '../../utils/middleware';
-import withSession from '../../utils/session';
+import { NextApiRequsetWithSession } from '../../types/req';
+import { withMethods, withSession } from '../../utils/middleware';
 
-const handler = async (
-  req: NextApiRequest & { session: any },
-  res: NextApiResponse
-): Promise<void> => {
+const handler = async (req: NextApiRequsetWithSession, res: NextApiResponse): Promise<void> => {
   req.session.destroy('user');
   await req.session.save();
 

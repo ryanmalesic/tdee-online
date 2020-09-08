@@ -1,132 +1,121 @@
-import { compare, hash } from 'bcrypt';
+import { hash } from 'bcrypt';
 import _ from 'lodash';
 import { NextApiRequest } from 'next';
-import { ValidationError } from 'yup';
 
-import rds from '../database';
 import { UserSchema } from '../schema';
-import { ApiError, User } from '../types';
-import { isApiError } from '../types/apiError';
+import { Errorable, Tdee, User } from '../types';
+import { NextApiRequsetWithSession } from '../types/req';
 import { getWeekEnd, getWeekStart } from '../utils/date';
+import { queryRds } from '../utils/query';
+import { getUserFromSession, validateUserPassword } from '../utils/user';
+import { validatePayload } from '../utils/validate';
 
 const UserController = {
-  createUser: async (req: NextApiRequest): Promise<{ user?: User; error?: ApiError }> => {
-    const validated: User | ApiError = await UserSchema.validate(req.body).catch(
-      (err: ValidationError) => {
-        return { code: 422, message: 'Unprocessable Entity', errors: err.errors };
-      }
+  createUser: async (req: NextApiRequest): Promise<Errorable<User>> => {
+    const { data: validated, error: validatePayloadError } = await validatePayload<User>(
+      UserSchema,
+      req.body
     );
 
-    if (isApiError(validated)) {
-      return { error: validated };
+    if (validatePayloadError) {
+      return { error: validatePayloadError };
     }
 
-    const queryParams = {
+    const parameters = {
       ..._.omit(validated, 'confirmPassword'),
       password: await hash(validated.password, 10)
     };
 
-    const data: { insertId: string } | ApiError = await rds
-      .query(
-        `
-        INSERT INTO users (first_name, email, password, birthdate, sex)
-          VALUES (:firstName, :email, :password, :birthdate, :sex);
-        `,
-        queryParams
-      )
-      .catch((err) => {
-        if (
-          err.name === 'BadRequestException' &&
-          (err.message as string).startsWith('Duplicate entry')
-        ) {
-          return {
+    const { data: response, error: queryRdsError } = await queryRds(
+      `
+    INSERT INTO users (first_name, email, password, birthdate, sex)
+      VALUES (:firstName, :email, :password, :birthdate, :sex);
+    `,
+      parameters
+    );
+
+    if (queryRdsError) {
+      if (queryRdsError.message.startsWith('Duplicate entry')) {
+        return {
+          error: {
             code: 409,
             message: 'Conflict',
             description: `Email address ${validated.email} is already taken.`
-          };
-        }
-
-        return { code: 500, message: 'Internal Server Error', description: err.message };
-      });
-
-    if (isApiError(data)) {
-      return { error: data };
+          }
+        };
+      }
+      return { error: queryRdsError };
     }
 
-    const newUser: User = { id: data.insertId, ...validated };
+    const newUser: User = { id: response.insertId, ...validated };
+    const newUserWithoutPasswords = _.omit(newUser, ['password', 'confirmPassword']) as User;
 
-    return { user: _.omit(newUser, ['password', 'confirmPassword']) as User };
+    return { data: newUserWithoutPasswords };
   },
-  getUser: async (
-    req: NextApiRequest & { session: any }
-  ): Promise<{ user?: Partial<User>; error?: ApiError }> => {
-    const id = req.session.get('user');
+  getUser: async (req: NextApiRequsetWithSession): Promise<Errorable<User>> => {
+    const { data: userId, error: getUserFromSessionError } = getUserFromSession(req);
 
-    if (!id) {
+    if (getUserFromSessionError) {
+      return { error: getUserFromSessionError };
+    }
+
+    const { data: response, error: queryRdsError } = await queryRds<User>(
+      `SELECT * FROM users WHERE id = :userId;`,
+      { userId }
+    );
+
+    if (queryRdsError) {
+      return { error: queryRdsError };
+    }
+
+    if (response.records.length === 0) {
       return {
         error: { code: 401, message: 'Unauthorized', description: 'You are not logged in!' }
       };
     }
 
-    const data: ApiError | any = await rds
-      .query(`SELECT * FROM users WHERE id = :id;`, { id })
-      .catch((err) => {
-        return { code: 500, message: 'Internal Server Error', description: err.message };
-      });
+    const user: User = response.records[0];
+    const userWithoutPassword = _.omit(user, 'password');
 
-    if (isApiError(data)) {
-      return { error: data };
-    }
-
-    if (data.records.length === 0) {
-      return {
-        error: { code: 401, message: 'Unauthorized', description: 'You are not logged in!' }
-      };
-    }
-
-    const user: User = data.records[0];
-
-    return { user: _.omit(user, 'password') };
+    return { data: userWithoutPassword };
   },
-  getUserTdee: async (
-    req: NextApiRequest & { session: any }
-  ): Promise<{ tdee?: number; error?: ApiError }> => {
-    const id = req.session.get('user');
+  getUserTdee: async (req: NextApiRequsetWithSession): Promise<Errorable<Tdee>> => {
+    const { data: userId, error: getUserFromSessionError } = getUserFromSession(req);
 
-    if (!id) {
-      return {
-        error: { code: 401, message: 'Unauthorized', description: 'You are not logged in!' }
-      };
+    if (getUserFromSessionError) {
+      return { error: getUserFromSessionError };
     }
 
-    const data: ApiError | any = await rds
-      .query(
-        `(
-            SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
-              FROM logs WHERE user_id = :userId
-              AND (date BETWEEN :lastWeekStart AND :lastWeekEnd)
-          ) UNION (
-            SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
-              FROM logs WHERE user_id = :userId
-              AND (date BETWEEN :currentWeekStart AND :currentWeekEnd)
-          ) ORDER BY firstLogDate;`,
-        {
-          userId: id,
-          lastWeekStart: getWeekStart(-1),
-          lastWeekEnd: getWeekEnd(-1),
-          currentWeekStart: getWeekStart(),
-          currentWeekEnd: getWeekEnd()
-        }
-      )
-      .catch((err) => {
-        return { code: 500, message: 'Internal Server Error', description: err.message };
-      });
+    type Response = {
+      firstLogDate: string;
+      averageWeight: number;
+      averageCaloricIntake: number;
+    };
 
-    if (isApiError(data)) {
-      return { error: data };
+    const { data: response, error: queryRdsError } = await queryRds<Response>(
+      `(
+        SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
+          FROM logs WHERE user_id = :userId
+          AND (date BETWEEN :lastWeekStart AND :lastWeekEnd)
+      ) UNION (
+        SELECT MIN(date) as firstLogDate, AVG(weight) as averageWeight, AVG(caloric_intake) as averageCaloricIntake
+          FROM logs WHERE user_id = :userId
+          AND (date BETWEEN :currentWeekStart AND :currentWeekEnd)
+      ) ORDER BY firstLogDate;`,
+      {
+        userId,
+        lastWeekStart: getWeekStart(-1),
+        lastWeekEnd: getWeekEnd(-1),
+        currentWeekStart: getWeekStart(),
+        currentWeekEnd: getWeekEnd()
+      }
+    );
+
+    if (queryRdsError) {
+      return { error: queryRdsError };
     }
 
-    if (data.records[0].firstLogDate === null) {
+    if (response.records[0].firstLogDate === null) {
       return {
         error: {
           code: 404,
@@ -136,28 +125,23 @@ const UserController = {
       };
     }
 
-    const deltaWeight = data.records[1].averageWeight - data.records[0].averageWeight;
+    const deltaWeight = response.records[1].averageWeight - response.records[0].averageWeight;
 
-    return { tdee: data.records[1].averageCaloricIntake - deltaWeight * 500 };
+    return { data: { tdee: response.records[1].averageCaloricIntake - deltaWeight * 500 } };
   },
-  validateUserCredentials: async (
-    req: NextApiRequest
-  ): Promise<{ user?: User; error?: ApiError }> => {
+  validateUserCredentials: async (req: NextApiRequest): Promise<Errorable<User>> => {
     const { email, password } = req.body;
 
-    const data = await rds
-      .query(`SELECT * FROM users WHERE email = :email;`, { email })
-      .catch((err) => {
-        return { code: 500, message: 'Internal Server Error', description: err.message };
-      });
+    const { data: response, error: queryRdsError } = await queryRds<User>(
+      `SELECT * FROM users WHERE email = :email;`,
+      { email }
+    );
 
-    if (isApiError(data)) {
-      return { error: data };
+    if (queryRdsError) {
+      return { error: queryRdsError };
     }
 
-    const user: User = data.records[0];
-
-    if (!user) {
+    if (response.records.length === 0) {
       return {
         error: {
           code: 401,
@@ -167,19 +151,17 @@ const UserController = {
       };
     }
 
-    const passwordsMatch: boolean | ApiError = await compare(password, user.password).catch(() => {
-      return {
-        code: 401,
-        message: 'Unauthorized',
-        description: 'The provided credentials are not valid'
-      };
-    });
+    const user: User = response.records[0];
 
-    if (isApiError(passwordsMatch)) {
-      return { error: passwordsMatch };
+    const { error: validateUserPasswordError } = await validateUserPassword(user, password);
+
+    if (validateUserPasswordError) {
+      return { error: validateUserPasswordError };
     }
 
-    return { user: _.omit(user, 'password') };
+    const userWithoutPassword = _.omit(user, 'password');
+
+    return { data: userWithoutPassword };
   }
 };
 

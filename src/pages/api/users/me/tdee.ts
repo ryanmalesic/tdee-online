@@ -1,15 +1,15 @@
 import { UserController } from '../../../../controllers';
-import { withMethods } from '../../../../utils/middleware';
-import withSession from '../../../../utils/session';
+import { withMethods, withSession } from '../../../../utils/middleware';
 
 const handler = async (req, res) => {
-  const { tdee, error } = await UserController.getUserTdee(req);
+  const { data, error } = await UserController.getUserTdee(req);
 
   if (error) {
     res.status(error.code).json(error);
-  } else {
-    res.status(200).json({ tdee });
+    return;
   }
+
+  res.status(200).json(data);
 };
 
 export default withSession(withMethods(handler, ['GET']));
