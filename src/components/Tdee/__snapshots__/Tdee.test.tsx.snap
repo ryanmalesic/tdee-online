@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Tdee unchanged 1`] = `
+<div
+  className="box"
+>
+  <h2
+    className="title is-2"
+  >
+    Your TDEE
+  </h2>
+  <h4
+    className="subtitle is-4"
+  >
+    Calculated with your recent logs
+  </h4>
+  <div
+    className="container has-text-centered"
+  >
+    <p
+      className="subtitle is-3"
+    >
+      <strong
+        className="has-text-primary"
+      >
+        1234
+         kCals / Day
+      </strong>
+    </p>
+  </div>
+</div>
+`;

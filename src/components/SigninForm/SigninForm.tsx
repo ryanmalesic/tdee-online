@@ -1,13 +1,10 @@
 import { useFormik } from 'formik';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import * as Yup from 'yup';
 
-export interface SigninFormProps {
-  error: string;
-  loading: boolean;
-  onSubmit: (values: SigninFormState) => void;
-}
+import { useUser } from '../../utils/hooks';
 
 export interface SigninFormState {
   email: string;
@@ -19,8 +16,33 @@ const initialValues: SigninFormState = {
   password: ''
 };
 
-const SigninForm: React.FC<SigninFormProps> = (props) => {
-  const { error, loading, onSubmit } = props;
+const SigninForm: React.FC = () => {
+  const router = useRouter();
+  const { mutate } = useUser({ redirectIfFound: true, redirectTo: '/dashboard' });
+
+  const [error, setError] = React.useState<string>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const onSubmit = async (values: SigninFormState) => {
+    setLoading(true);
+    const response = await fetch('/api/signin', {
+      method: 'POST',
+      body: JSON.stringify(values),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setLoading(false);
+
+    const json = await response.json();
+
+    if (response.ok) {
+      await mutate(json);
+      await router.push('/dashboard');
+    } else {
+      setError(json.message);
+    }
+  };
 
   const validationSchema = Yup.object<SigninFormState>({
     email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -80,20 +102,26 @@ const SigninForm: React.FC<SigninFormProps> = (props) => {
         )}
       </div>
 
-      <div className="field is-grouped">
-        <div className="control">
-          <button className={submitButtonClass} disabled={formik.isSubmitting} type="submit">
-            Sign In
-          </button>
+      <div className="field">
+        <div className="columns is-variable is-0-mobile is-3-tablet">
+          <div className="column is-narrow">
+            <div className="control">
+              <button
+                className={submitButtonClass}
+                disabled={formik.isSubmitting || !formik.isValid}
+                type="submit">
+                Sign In
+              </button>
+            </div>
+          </div>
+          <div className="column">
+            <Link href="/signup">
+              <a className={`button is-link`}>Don&apos;t have an account? Sign Up.</a>
+            </Link>
+          </div>
         </div>
-
-        <div className="control">
-          <Link href="/signup">
-            <a className={`button is-link`}>Don&apos;t have an account? Sign Up.</a>
-          </Link>
-        </div>
+        {error && <p className="help is-danger">{error}</p>}
       </div>
-      {error && <p className="help is-danger">{error}</p>}
     </form>
   );
 };

@@ -1,10 +1,3 @@
-import 'reflect-metadata';
-
-import { Connection, ConnectionManager, createConnection, getConnectionManager } from 'typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-
-import { User } from './entities';
-
 const {
   AWS_REGION: region,
   DB_DATABASE: database,
@@ -12,35 +5,12 @@ const {
   DB_SECRET_ARN: secretArn
 } = process.env;
 
-/**
- * Database manager class
- */
-export class Database {
-  private connectionManager: ConnectionManager;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const rds = require('data-api-client')({
+  region,
+  secretArn,
+  resourceArn,
+  database
+});
 
-  constructor() {
-    this.connectionManager = getConnectionManager();
-  }
-
-  public async getConnection(): Promise<Connection> {
-    const CONNECTION_NAME = `default`;
-
-    if (this.connectionManager.has(CONNECTION_NAME)) {
-      await this.connectionManager.get(CONNECTION_NAME).close();
-    }
-
-    return await createConnection({
-      name: CONNECTION_NAME,
-      type: 'aurora-data-api',
-      database,
-      secretArn,
-      resourceArn,
-      region,
-      synchronize: true,
-      entities: [User],
-      namingStrategy: new SnakeNamingStrategy()
-    });
-  }
-}
-
-export default Database;
+export default rds;

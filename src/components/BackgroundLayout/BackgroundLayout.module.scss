@@ -1,13 +1,17 @@
-@import "../../scss/theme.scss";
+@import '../../scss/theme.scss';
 
 .background {
-    background-image: url("../../../public/background.jpg");
-    background-position: center;
-    background-size: cover;
+  background-image: url('../../../public/background.jpg');
+  background-position: center;
+  background-size: cover;
 }
 
-.credit {
-    bottom: 1em;
-    position: absolute;
-    right: 1em;
+.heroHead {
+  background-color: $background;
+}
+
+.footer {
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+  text-align: right;
 }

@@ -2,13 +2,106 @@
 
 exports[`renders BackgroundLayout unchanged 1`] = `
 <section
-  className="hero is-fullheight background"
+  className="hero is-fluid is-fullheight background"
 >
   <div
+    className="hero-head heroHead"
+  >
+    <nav
+      className="navbar"
+      role="navigation"
+    >
+      <div
+        className="navbar-brand"
+      >
+        <a
+          className="navbar-item"
+          href="/"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+        >
+          <h1
+            className="title"
+          >
+            TDEE Online
+          </h1>
+        </a>
+        <a
+          className="navbar-burger burger "
+          data-target="navbarBasicExample"
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          role="button"
+          tabIndex={0}
+        >
+          <span
+            aria-hidden="true"
+          />
+          <span
+            aria-hidden="true"
+          />
+          <span
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+      <div
+        className="navbar-menu"
+        id="navbarBasicExample"
+      >
+        <div
+          className="navbar-start"
+        >
+          <a
+            className="navbar-item"
+            href="/"
+            onClick={[Function]}
+            onMouseEnter={[Function]}
+          >
+            Home
+          </a>
+        </div>
+        <div
+          className="navbar-end"
+        >
+          <div
+            className="navbar-item"
+          >
+            <div
+              className="buttons"
+            >
+              <a
+                className="button has-background-primary-dark"
+                href="/signup"
+                onClick={[Function]}
+                onMouseEnter={[Function]}
+              >
+                <strong>
+                  Sign up
+                </strong>
+              </a>
+              <a
+                className="button has-text-dark has-background-grey-lighter"
+                href="/signin"
+                onClick={[Function]}
+                onMouseEnter={[Function]}
+              >
+                Sign in
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div
     className="hero-body"
+  />
+  <div
+    className="hero-footer footer"
   >
     <span
-      className="tag credit"
+      className="tag"
     >
       Photo by  
       <a

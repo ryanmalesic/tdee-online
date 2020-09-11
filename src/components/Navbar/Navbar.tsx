@@ -1,13 +1,30 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 
+import { useUser } from '../../utils/hooks';
+
 const Navbar: React.FC = () => {
+  const router = useRouter();
+  const { data, mutate } = useUser();
+
   const [isActive, setIsActive] = React.useState(false);
+
+  const handleOnSignoutClick = async () => {
+    await fetch('/api/signout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    await mutate(null);
+    await router.push('/signin');
+  };
 
   const isActiveClass = isActive ? 'is-active' : '';
 
   return (
-    <nav className="navbar is-fixed-top" role="navigation">
+    <nav className="navbar" role="navigation">
       <div className="navbar-brand">
         <Link href="/">
           <a className="navbar-item">
@@ -37,19 +54,36 @@ const Navbar: React.FC = () => {
           <Link href="/">
             <a className="navbar-item">Home</a>
           </Link>
+          {data && (
+            <Link href="/dashboard">
+              <a className="navbar-item">Dashboard</a>
+            </Link>
+          )}
         </div>
 
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <Link href="/signup">
-                <a className="button has-background-primary-dark">
-                  <strong>Sign up</strong>
-                </a>
-              </Link>
-              <Link href="/signin">
-                <a className="button has-text-dark has-background-grey-lighter">Sign in</a>
-              </Link>
+              {!data ? (
+                <>
+                  <Link href="/signup">
+                    <a className="button has-background-primary-dark">
+                      <strong>Sign up</strong>
+                    </a>
+                  </Link>
+                  <Link href="/signin">
+                    <a className="button has-text-dark has-background-grey-lighter">Sign in</a>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="button has-text-dark has-background-grey-lighter"
+                    onClick={handleOnSignoutClick}>
+                    Sign out
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

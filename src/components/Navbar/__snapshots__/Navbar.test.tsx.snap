@@ -2,7 +2,7 @@
 
 exports[`renders Navbar unchanged 1`] = `
 <nav
-  className="navbar is-fixed-top"
+  className="navbar"
   role="navigation"
 >
   <div
